@@ -1,5 +1,5 @@
 CREATE TABLE public.criminals (
-"_id" serial NOT NULL,
+"_id" serial NOT NULL PRIMARY KEY,
 "title" varchar NOT NULL,
 "images" varchar NOT NULL,
 "details" varchar,
