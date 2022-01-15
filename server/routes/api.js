@@ -17,4 +17,8 @@ router.post('/list', dbController.addList, (req, res) => {
   return res.status(200).json();
 });
 
+router.delete('/list', dbController.deleteList, (req, res) => {
+  return res.status(200).json();
+});
+
 module.exports = router;
