@@ -20,11 +20,7 @@ function Cards() {
               text='Card'
               label='Airlines'
               path='/Airline'
-            />
-          
-          
-
-          
+            />    
           </ul>
         </div>
       </div>
