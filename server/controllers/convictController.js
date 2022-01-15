@@ -6,7 +6,7 @@ convictController.fetchMostWanted = (req, res, next) => {
   const base = 'https://api.fbi.gov/wanted/v1/list';
   let query;
   let URL;
-
+  
   if (Object.keys(req.query).length > 0) {
     query = `?field_offices=${req.query.field_offices}`
     URL = base + query;
