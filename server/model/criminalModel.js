@@ -14,5 +14,6 @@ module.exports = {
   },
 };
 
+//use command on a separate terminal to Query and look at db
 const connectionCommand =
   'psql -d postgres://lsadgyvw:D_fApPpqxnALjomma5fsWXUao9QdWQA7@castor.db.elephantsql.com/lsadgyvw';
