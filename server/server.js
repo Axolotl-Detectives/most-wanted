@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
+const apiRouter = require('./routes/api');
+
 /**
  * handle parsing request body
  */
@@ -11,6 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // statically serve everything in the build folder on the route '/build'
 app.use('/build', express.static(path.join(__dirname, '../build')));
+
+app.use('/api', apiRouter);
 
 // serve index.html on the route '/'
 app.get('/', (req, res) => {
