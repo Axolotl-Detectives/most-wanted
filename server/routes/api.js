@@ -12,7 +12,7 @@ router.get('/list', dbController.getList, (req, res) => {
   return res.status(200).json(res.locals.crimList);
 });
 
-router.post('/list', dbController.addCriminal, (req, res) => {
+router.post('/list', dbController.addList, (req, res) => {
   //redirect to homepage
   return res.status(200).json();
 });
