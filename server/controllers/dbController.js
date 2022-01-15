@@ -24,9 +24,22 @@ dbController.getList = (req, res, next) => {
 
 //add an entry to the list table, need to get values in from the request body
 dbController.addList = (req, res, next) => {
-  const addCrimQuery = `INSERT INTO public.list (title,images,details,reward_text,sex,hair_raw,publication,url,field_offices,criminal_id) VALUES ('tommy','hi','hi','hi','hi','hi','hi','hi','hi','hi')`;
-  db.query(addCrimQuery)
+  const values = [
+    req.body.title,
+    req.body.images,
+    req.body.details,
+    req.body.reward_text,
+    req.body.sex,
+    req.body.hair_raw,
+    req.body.publication,
+    req.body.url,
+    req.body.field_offices,
+    req.body.criminal_id,
+  ];
+  const addCrimQuery = `INSERT INTO public.list (title,images,details,reward_text,sex,hair_raw,publication,url,field_offices,criminal_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`;
+  db.query(addCrimQuery, values)
     .then((result) => {
+      console.log(result.rows);
       return next();
     })
     .catch((err) => {
