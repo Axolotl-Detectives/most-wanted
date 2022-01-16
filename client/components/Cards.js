@@ -1,6 +1,7 @@
 import React from 'react';
 import './Cards.css';
 import CardItem from './CardItem';
+import defaultImg from '../images/Miller.jpg'
 
 function Cards() {
   return (
@@ -10,16 +11,16 @@ function Cards() {
         <div className='cards__wrapper'>
           <ul className='cards__items'>
             <CardItem
-              src='images/Miller.jpeg'
+              src={defaultImg}
               text='Card'
-              label='Hotel'
-              path='/services'
+              label='Profile'
+              path='/profile'
             />
             <CardItem
-              src='images/Miller.jpeg'
+              src={defaultImg}
               text='Card'
-              label='Airlines'
-              path='/Airline'
+              label='Profile'
+              path='/profile'
             />    
           </ul>
         </div>
