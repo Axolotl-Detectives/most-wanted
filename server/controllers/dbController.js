@@ -45,9 +45,27 @@ dbController.addList = (req, res, next) => {
     .catch((err) => {
       console.log(err);
       return next({
-        log: 'dbController.addCriminal: ERROR: adding entry to database',
+        log: 'dbController.addList: ERROR: adding entry to database',
         message: {
-          err: 'Error occurred in dbController.addCriminal. Check server logs for more details.',
+          err: 'Error occurred in dbController.addList. Check server logs for more details.',
+        },
+      });
+    });
+};
+
+dbController.deleteList = (req, res, next) => {
+  const values = [req.body._id];
+  const delCrimQuery = 'DELETE FROM public.list WHERE _id=$1';
+  db.query(delCrimQuery, values)
+    .then((result) => {
+      return next();
+    })
+    .catch((err) => {
+      console.log(err);
+      return next({
+        log: 'dbController.deleteList: ERROR: deleting entry from database',
+        message: {
+          err: 'Error occurred in dbController.deleteList. Check server logs for more details.',
         },
       });
     });
