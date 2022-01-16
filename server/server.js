@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const cors = require('cors');
 
 const apiRouter = require('./routes/api');
 
@@ -9,6 +10,7 @@ const apiRouter = require('./routes/api');
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // statically serve everything in the build folder on the route '/build'
 app.use('/build', express.static(path.join(__dirname, '../build')));
