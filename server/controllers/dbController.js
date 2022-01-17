@@ -86,12 +86,10 @@ dbController.updateNotes = (req, res, next) => {
     stringify new note 
       run patch req query with the new stringified notes/ this will return the updated notes 
         parse the data returned 
-        use that to update the notes state in the frontend to reflect whats currently in the database
-          ! would prolly have to import the zustand store in if we're using that and accesss the setNotes hook???
+        send the array of notes back to frontend for state update
   */
 
-  //get request
-  db.query('SELECT notes FROM public.list WHERE _id=23')
+  db.query('SELECT notes FROM public.list WHERE _id=$1', [req.body._id])
     .then((data) => {
       const { rows } = data;
       const parsedNotes = JSON.parse(rows[0].notes);
@@ -107,8 +105,8 @@ dbController.updateNotes = (req, res, next) => {
           return JSON.parse(data.rows[0].notes);
         })
         .then((result) => {
-          // ! THIS IS WHERE WE WILL ALTER OUR STATE WITH THIS NEW ARRAY OF STRINGS
-          //! EACH STRING WILL BE KINDA A CARD ELEMENT
+          res.locals.notes = result;
+          // TODO sending the new notes array back to the front end to update state
           return next();
         })
         .catch((err) => {
@@ -120,7 +118,6 @@ dbController.updateNotes = (req, res, next) => {
             },
           });
         });
-      return next();
     })
     .catch((err) => {
       console.log(err);
@@ -136,5 +133,7 @@ dbController.updateNotes = (req, res, next) => {
 dbController.getNotes = (req, res, next) => {
   //get notes based on criminal id of convict
 };
+
+dbController.deleteNotes = (req, res, next) => {};
 
 module.exports = dbController;

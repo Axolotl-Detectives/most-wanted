@@ -22,7 +22,7 @@ router.delete('/list', dbController.deleteList, (req, res) => {
 });
 
 router.patch('/list', dbController.updateNotes, (req, res) => {
-  return res.status(200).json();
+  return res.status(200).json(res.locals.notes);
 });
 
 module.exports = router;
