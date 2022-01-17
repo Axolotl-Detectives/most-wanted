@@ -39,8 +39,20 @@ dbController.addList = (req, res, next) => {
   const addCrimQuery = `INSERT INTO public.list (title,images,details,reward_text,sex,hair_raw,publication,url,field_offices,criminal_id, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`;
   db.query(addCrimQuery, values)
     .then((result) => {
-      console.log(result.rows);
-      return next();
+      db.query('SELECT * FROM public.list;')
+        .then((data) => {
+          res.locals.newList = data.rows;
+          return next();
+        })
+        .catch((err) => {
+          console.log(err);
+          return next({
+            log: 'dbController.addList.GET: ERROR: getting entry from database',
+            message: {
+              err: 'Error occurred in dbController.addList.GET. Check server logs for more details.',
+            },
+          });
+        });
     })
     .catch((err) => {
       console.log(err);
@@ -55,10 +67,23 @@ dbController.addList = (req, res, next) => {
 
 dbController.deleteList = (req, res, next) => {
   const values = [req.body._id];
-  const delCrimQuery = 'DELETE FROM public.list WHERE _id=$1';
+  const delCrimQuery = 'DELETE FROM public.list WHERE _id=$1;';
   db.query(delCrimQuery, values)
     .then((result) => {
-      return next();
+      db.query('SELECT * FROM public.list;')
+        .then((data) => {
+          res.locals.newList = data.rows;
+          return next();
+        })
+        .catch((err) => {
+          console.log(err);
+          return next({
+            log: 'dbController.deleteList.GET: ERROR: getting entry from database',
+            message: {
+              err: 'Error occurred in dbController.deleteList.GET. Check server logs for more details.',
+            },
+          });
+        });
     })
     .catch((err) => {
       console.log(err);
@@ -103,7 +128,7 @@ dbController.updateNotes = (req, res, next) => {
           return JSON.parse(data.rows[0].notes);
         })
         .then((result) => {
-          res.locals.notes = result;
+          res.locals.newNotes = result;
           // TODO sending the new notes array back to the front end to update state
           return next();
         })
@@ -112,7 +137,7 @@ dbController.updateNotes = (req, res, next) => {
           return next({
             log: 'dbController.updateNotes.PATCH: ERROR: updating notes data to the database with new notes',
             message: {
-              err: 'Error occurred in dbController.updateNotes. Check server logs for more details.',
+              err: 'Error occurred in dbController.updateNotes.PATCH. Check server logs for more details.',
             },
           });
         });
@@ -129,9 +154,69 @@ dbController.updateNotes = (req, res, next) => {
 };
 
 dbController.getNotes = (req, res, next) => {
-  //get notes based on criminal id of convict
+  const values = [req.body._id];
+  const getNotesQuery = 'SELECT notes FROM public.list WHERE _id=$1;';
+  db.query(getNotesQuery, values)
+    .then((data) => {
+      const parsedNotes = JSON.parse(data.rows[0].notes);
+      res.locals.notes = parsedNotes;
+      // ! saved in notes
+      return next();
+    })
+    .catch((err) => {
+      console.log(err);
+      return next({
+        log: 'dbController.getNotes: ERROR: getting notes data from from database',
+        message: {
+          err: 'Error occurred in dbController.getNotes. Check server logs for more details.',
+        },
+      });
+    });
 };
 
-dbController.deleteNotes = (req, res, next) => {};
+dbController.deleteNotes = (req, res, next) => {
+  //need req.body._id of which convicts notes to delete
+  //need req.body.notesIndex from 0 - notes.length to know which note to delete
+
+  db.query('SELECT notes FROM public.list WHERE _id=$1', [req.body._id])
+    .then((data) => {
+      const { rows } = data;
+      const parsedNotes = JSON.parse(rows[0].notes);
+      parsedNotes.splice(req.body.notesIndex, 1);
+      return JSON.stringify(parsedNotes);
+    })
+    .then((result) => {
+      const values = [result, req.body._id];
+      const updateNotesQuery =
+        'UPDATE public.list SET notes=$1 WHERE _id=$2 RETURNING notes;';
+      db.query(updateNotesQuery, values)
+        .then((data) => {
+          return JSON.parse(data.rows[0].notes);
+        })
+        .then((result) => {
+          res.locals.newNotes = result;
+          // ! sending newNotes state back to frontend
+          return next();
+        })
+        .catch((err) => {
+          console.log(err);
+          return next({
+            log: 'dbController.deleteNotes.UPDATE: ERROR: updating note data from from database',
+            message: {
+              err: 'Error occurred in dbController.deleteNotes.UPDATE. Check server logs for more details.',
+            },
+          });
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      return next({
+        log: 'dbController.deleteNotes.GET: ERROR: getting note data from from database',
+        message: {
+          err: 'Error occurred in dbController.deleteNotes.GET. Check server logs for more details.',
+        },
+      });
+    });
+};
 
 module.exports = dbController;
