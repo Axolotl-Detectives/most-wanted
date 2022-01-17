@@ -21,4 +21,8 @@ router.delete('/list', dbController.deleteList, (req, res) => {
   return res.status(200).json();
 });
 
+router.patch('/list', dbController.updateNotes, (req, res) => {
+  return res.status(200).json();
+});
+
 module.exports = router;

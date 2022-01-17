@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const { parse } = require('pg-protocol');
 const db = require('../model/criminalModel');
 
 const dbController = {};
@@ -35,8 +36,9 @@ dbController.addList = (req, res, next) => {
     req.body.url,
     req.body.field_offices,
     req.body.criminal_id,
+    '[]',
   ];
-  const addCrimQuery = `INSERT INTO public.list (title,images,details,reward_text,sex,hair_raw,publication,url,field_offices,criminal_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`;
+  const addCrimQuery = `INSERT INTO public.list (title,images,details,reward_text,sex,hair_raw,publication,url,field_offices,criminal_id, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`;
   db.query(addCrimQuery, values)
     .then((result) => {
       console.log(result.rows);
@@ -69,6 +71,70 @@ dbController.deleteList = (req, res, next) => {
         },
       });
     });
+};
+
+dbController.updateNotes = (req, res, next) => {
+  /*
+  req.body.newNote
+  req.body._id
+  */
+
+  /*
+  (get request) notes data from db
+    parse notes
+    append/push new note string from req.body
+    stringify new note 
+      run patch req query with the new stringified notes/ this will return the updated notes 
+        parse the data returned 
+        use that to update the notes state in the frontend to reflect whats currently in the database
+          ! would prolly have to import the zustand store in if we're using that and accesss the setNotes hook???
+  */
+
+  //get request
+  db.query('SELECT notes FROM public.list WHERE _id=23')
+    .then((data) => {
+      const { rows } = data;
+      const parsedNotes = JSON.parse(rows[0].notes);
+      parsedNotes.push(req.body.newNote);
+      return JSON.stringify(parsedNotes);
+    })
+    .then((result) => {
+      const values = [result, req.body._id];
+      const updateNotesQuery =
+        'UPDATE public.list SET notes=$1 WHERE _id=$2 RETURNING notes;';
+      db.query(updateNotesQuery, values)
+        .then((data) => {
+          return JSON.parse(data.rows[0].notes);
+        })
+        .then((result) => {
+          // ! THIS IS WHERE WE WILL ALTER OUR STATE WITH THIS NEW ARRAY OF STRINGS
+          //! EACH STRING WILL BE KINDA A CARD ELEMENT
+          return next();
+        })
+        .catch((err) => {
+          console.log(err);
+          return next({
+            log: 'dbController.updateNotes.PATCH: ERROR: updating notes data to the database with new notes',
+            message: {
+              err: 'Error occurred in dbController.updateNotes. Check server logs for more details.',
+            },
+          });
+        });
+      return next();
+    })
+    .catch((err) => {
+      console.log(err);
+      return next({
+        log: 'dbController.updateNotes.GET: ERROR: getting all notes data from from database',
+        message: {
+          err: 'Error occurred in dbController.updateNotes. Check server logs for more details.',
+        },
+      });
+    });
+};
+
+dbController.getNotes = (req, res, next) => {
+  //get notes based on criminal id of convict
 };
 
 module.exports = dbController;
