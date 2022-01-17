@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-const { parse } = require('pg-protocol');
 const db = require('../model/criminalModel');
 
 const dbController = {};
