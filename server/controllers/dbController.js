@@ -219,4 +219,13 @@ dbController.deleteNotes = (req, res, next) => {
     });
 };
 
+dbController.getSpecificConvict = (req,res,next) =>{
+  //criminal id is in the url
+  //get back all criminal info 
+  //req.query or req.params 
+  const getConvictQuery = 'SELECT * FROM public.list WHERE criminal_id=:id'
+  db.query()
+}
+
+
 module.exports = dbController;

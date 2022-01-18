@@ -12,6 +12,11 @@ router.get('/list', dbController.getList, (req, res) => {
   return res.status(200).json(res.locals.crimList);
 });
 
+router.get('/list/:id', dbController.getSpecificConvict, (req, res) => {
+  //get list and display the clients list
+  return res.status(200).json(res.locals.crimList);
+});
+
 router.post('/list', dbController.addList, (req, res) => {
   //redirect to homepage
   return res.status(200).json(res.locals.newList);
